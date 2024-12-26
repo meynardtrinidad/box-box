@@ -7,22 +7,29 @@
 
 struct termios termios_t;
 
-int generate_random_number();
-
-void generate_area(int x, int y);
-
 void enable_raw_mode(struct termios *t);
 void disable_raw_mode(struct termios *t);
 void start_repl();
 
+int generate_random_number();
+
+void *generate_area(int x, int y);
+
 int main() {
   srand(time(NULL));
   int x = generate_random_number(), y = generate_random_number();
-  generate_area(x, y);
+
+  int *area;
+  if ((area = generate_area(x, y)) == NULL) {
+    printf("Error generating area of x = %d and y = %d.", x, y);
+    return 1;
+  }
 
   enable_raw_mode(&termios_t);
   start_repl();
   disable_raw_mode(&termios_t);
+
+  free(area);
   return 0;
 }
 
@@ -31,16 +38,12 @@ int generate_random_number() { return MIN + (rand() % (MAX - MIN + 1)); }
 // Generate an x by y matrix where the outer
 // edges are filled with '#' and that everything
 // should be inside the box.
-void generate_area(int x, int y) {
-  x = 5;
-  y = 5;
-  int matrix[25] = {
-      0}; // FIXME: Use `malloc` to allocate the calculated memory.
-  int len = sizeof(matrix) / sizeof(int);
+void *generate_area(int x, int y) {
+  int len = x * y;
+  int *area = malloc(len * sizeof(int));
 
-  int rowCount = 1;
   for (int i = 0; i < len; i++) {
-    int row = i / y;
+    int row = i / x;
     int col = i % x;
 
     if (row == 0 || row == y - 1 || col == 0 || col == x - 1) {
@@ -50,20 +53,24 @@ void generate_area(int x, int y) {
     }
 
     if (col == x - 1) {
-      rowCount++;
       printf("\n");
     }
   }
-}
 
-void disable_raw_mode(struct termios *t) {
-  tcsetattr(STDIN_FILENO, TCSAFLUSH, t);
+  return area;
 }
 
 void enable_raw_mode(struct termios *t) {
   tcgetattr(STDIN_FILENO, t);
-  termios_t.c_lflag &= ~(ICANON | ECHO); // Disable canonical mode and echo
-  tcsetattr(STDIN_FILENO, TCSAFLUSH, t);
+  struct termios _termios; // Creates new termios to prevent modifying the
+                           // original termios.
+  _termios = *t;
+  _termios.c_lflag &= ~(ICANON | ECHO); // Disable canonical mode and echo
+  tcsetattr(STDIN_FILENO, TCSAFLUSH, &_termios);
+}
+
+void disable_raw_mode(struct termios *t) {
+  tcsetattr(STDIN_FILENO, TCSANOW, t);
 }
 
 void start_repl() {

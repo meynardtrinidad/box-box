@@ -1,7 +1,7 @@
 #include "constants.h"
 
-const int MIN = 1;
-const int MAX = 5;
+const int MIN = 10;
+const int MAX = 20;
 
 const char WALL = '#';
 const char SPACE = '.';
