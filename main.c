@@ -10,14 +10,16 @@ struct termios termios_t;
 void enable_raw_mode(struct termios *t);
 void disable_raw_mode(struct termios *t);
 
-int generate_random_number();
+int generate_random_number(int min, int max);
 
 void *generate_area(int x, int y);
 void display_area(int *area, int len, int x, int y);
+int is_inside(int point, int len, int x, int y);
 
 int main() {
   srand(time(NULL));
-  int x = generate_random_number(), y = generate_random_number();
+  int x = generate_random_number(MIN, MAX),
+      y = generate_random_number(MIN, MAX);
   int len = x * y;
 
   int *area;
@@ -26,14 +28,19 @@ int main() {
     return 1;
   }
 
+  int start_pos = generate_random_number(MIN, len);
+  while (is_inside(start_pos, len, x, y) == 0) {
+    start_pos = generate_random_number(MIN, len);
+  }
+  area[start_pos] = PLAYER;
   display_area(area, len, x, y);
-  int start_pos = len * .75; // FIX: Must be randomly generated inside the area.
 
   enable_raw_mode(&termios_t);
 
   char c;
   while (read(STDIN_FILENO, &c, 1) == 1) {
-    system("clear");
+    system("clear"); // FIX: This forces to redraw the whole screen instead of
+                     // performing partial redraws.
 
     if (c == 'q') // Exit on 'q' press
       break;
@@ -90,7 +97,20 @@ int main() {
   return 0;
 }
 
-int generate_random_number() { return MIN + (rand() % (MAX - MIN + 1)); }
+int generate_random_number(int min, int max) {
+  return min + (rand() % (max - min + 1));
+}
+
+int is_inside(int point, int len, int x, int y) {
+  int row = point / x;
+  int col = point % x;
+
+  if (row == 0 || row == y - 1 || col == 0 || col == x - 1) {
+    return 0;
+  }
+
+  return 1;
+}
 
 // Generate an x by y matrix where the outer
 // edges are filled with '#' and that everything
@@ -98,17 +118,10 @@ int generate_random_number() { return MIN + (rand() % (MAX - MIN + 1)); }
 void *generate_area(int x, int y) {
   int len = x * y;
   int *area = malloc(len * sizeof(int));
-  int pos = len * .75; // FIX: Must be random generated inside the area.
 
   for (int i = 0; i < len; i++) {
     int row = i / x;
     int col = i % x;
-
-    if (i == pos) {
-      printf("i = %d, pos = %d, len = %d\n", i, pos, len);
-      area[i] = PLAYER;
-      continue;
-    }
 
     if (row == 0 || row == y - 1 || col == 0 || col == x - 1) {
       area[i] = WALL;
