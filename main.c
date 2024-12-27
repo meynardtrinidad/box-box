@@ -57,28 +57,24 @@ int main() {
       if (seq[0] == '[') {
         switch (seq[1]) {
         case 'A':
-          printf("Up arrow.\n");
           area[start_pos] = SPACE;
           new_pos = start_pos - x;
           area[new_pos] = PLAYER;
           start_pos = new_pos;
           break;
         case 'B':
-          printf("Down arrow.\n");
           area[start_pos] = SPACE;
           new_pos = start_pos + x;
           area[new_pos] = PLAYER;
           start_pos = new_pos;
           break;
         case 'C':
-          printf("Right arrow pressed.\n");
           area[start_pos] = SPACE;
           new_pos = start_pos + 1;
           area[new_pos] = PLAYER;
           start_pos = new_pos;
           break;
         case 'D':
-          printf("Left arrow pressed.\n");
           area[start_pos] = SPACE;
           new_pos = start_pos - 1;
           area[new_pos] = PLAYER;
@@ -138,16 +134,16 @@ void display_area(int *area, int len, int x, int y) {
     int col = i % x;
 
     switch (area[i]) {
-    case 35:
+    case WALL:
       printf("%c", WALL);
       break;
-    case 46:
+    case SPACE:
       printf("%c", SPACE);
       break;
-    case 64:
+    case PLAYER:
       printf("%c", PLAYER);
       break;
-    case 79:
+    case BOX:
       printf("%c", BOX);
       break;
     }
