@@ -39,9 +39,6 @@ int main() {
 
   char c;
   while (read(STDIN_FILENO, &c, 1) == 1) {
-    system("clear"); // FIX: This forces to redraw the whole screen instead of
-                     // performing partial redraws.
-
     if (c == 'q') // Exit on 'q' press
       break;
 
@@ -57,30 +54,22 @@ int main() {
       if (seq[0] == '[') {
         switch (seq[1]) {
         case 'A':
-          area[start_pos] = SPACE;
           new_pos = start_pos - x;
-          area[new_pos] = PLAYER;
-          start_pos = new_pos;
           break;
         case 'B':
-          area[start_pos] = SPACE;
           new_pos = start_pos + x;
-          area[new_pos] = PLAYER;
-          start_pos = new_pos;
           break;
         case 'C':
-          area[start_pos] = SPACE;
           new_pos = start_pos + 1;
-          area[new_pos] = PLAYER;
-          start_pos = new_pos;
           break;
         case 'D':
-          area[start_pos] = SPACE;
           new_pos = start_pos - 1;
-          area[new_pos] = PLAYER;
-          start_pos = new_pos;
           break;
         }
+
+        area[start_pos] = SPACE;
+        area[new_pos] = PLAYER;
+        start_pos = new_pos;
       }
     }
 
@@ -130,6 +119,9 @@ void *generate_area(int x, int y) {
 }
 
 void display_area(int *area, int len, int x, int y) {
+  system("clear"); // FIX: This forces to redraw the whole screen instead of
+                   // performing partial redraws.
+
   for (int i = 0; i < len; i++) {
     int col = i % x;
 

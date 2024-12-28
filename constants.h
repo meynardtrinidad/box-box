@@ -6,7 +6,7 @@
 #define PLAYER '@'
 #define BOX 'O'
 
-extern const int MIN;
-extern const int MAX;
+#define MIN 10
+#define MAX 20
 
 #endif
