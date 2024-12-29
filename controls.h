@@ -45,6 +45,7 @@ void handle_move_player(char c, int *pos, int *area, int len, int x, int y) {
         return;
       }
 
+      // FIX: Collision on multiple boxes
       if (area[new_pos] == BOX) {
         int new_box_pos = handle_move_direction(seq[1], new_pos, x);
 

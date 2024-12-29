@@ -26,16 +26,15 @@ int main() {
     return 1;
   }
 
-  int start_pos = generate_random_number(MIN, len);
-  while (is_inside(start_pos, len, x, y) == 0) {
-    start_pos = generate_random_number(MIN, len);
-  }
+  int start_pos;
+  while (start_pos = generate_random_number(MIN, len), area[start_pos] != SPACE)
+    ;
   area[start_pos] = PLAYER;
 
-  int random_pos = generate_random_number(MIN, len);
-  while (is_inside(random_pos, len, x, y) == 0 && random_pos != start_pos) {
-    random_pos = generate_random_number(MIN, len);
-  }
+  int random_pos;
+  while (random_pos = generate_random_number(MIN, len),
+         area[random_pos] != SPACE)
+    ;
   area[random_pos] = BOX;
 
   display_area(area, len, x, y);
