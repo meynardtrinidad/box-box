@@ -10,7 +10,6 @@
 // should be inside the box.
 void *generate_area(int x, int y) {
   int len = x * y;
-  // int *area = malloc(len * sizeof(int));
   int *area;
 
   if ((area = (int *)malloc(len * sizeof(int))) == NULL) {

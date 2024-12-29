@@ -1,6 +1,8 @@
 #include "area.h"
 #include "constants.h"
+#include "controls.h"
 #include "utils.h"
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <termios.h>
@@ -38,37 +40,7 @@ int main() {
     if (c == 'q') // Exit on 'q' press
       break;
 
-    if (c == 27) {
-      char seq[2];
-      char *p = seq;
-
-      read(STDIN_FILENO, &seq[0], 1);
-      read(STDIN_FILENO, &seq[1], 1);
-
-      int new_pos = start_pos;
-
-      if (seq[0] == '[') {
-        switch (seq[1]) {
-        case 'A':
-          new_pos = start_pos - x;
-          break;
-        case 'B':
-          new_pos = start_pos + x;
-          break;
-        case 'C':
-          new_pos = start_pos + 1;
-          break;
-        case 'D':
-          new_pos = start_pos - 1;
-          break;
-        }
-
-        area[start_pos] = SPACE;
-        area[new_pos] = PLAYER;
-        start_pos = new_pos;
-      }
-    }
-
+    handle_move(c, &start_pos, area, len, x, y);
     display_area(area, len, x, y);
   }
 
