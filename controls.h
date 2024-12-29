@@ -5,10 +5,30 @@
 #include "constants.h"
 #include <unistd.h>
 
-void handle_move(char c, int *pos, int *area, int len, int x, int y) {
+int handle_move_direction(int dir, int pos, int step) {
+  int new_pos = pos;
+
+  switch (dir) {
+  case 'A':
+    new_pos = new_pos - step;
+    break;
+  case 'B':
+    new_pos = new_pos + step;
+    break;
+  case 'C':
+    new_pos = new_pos + 1;
+    break;
+  case 'D':
+    new_pos = new_pos - 1;
+    break;
+  }
+
+  return new_pos;
+}
+
+void handle_move_player(char c, int *pos, int *area, int len, int x, int y) {
   int start_pos = *pos;
 
-  // FIX: Prevent any object from going out-of-bounds
   if (c == 27) {
     char seq[2];
     char *p = seq;
@@ -19,23 +39,20 @@ void handle_move(char c, int *pos, int *area, int len, int x, int y) {
     int new_pos = start_pos;
 
     if (seq[0] == '[') {
-      switch (seq[1]) {
-      case 'A':
-        new_pos = start_pos - x;
-        break;
-      case 'B':
-        new_pos = start_pos + x;
-        break;
-      case 'C':
-        new_pos = start_pos + 1;
-        break;
-      case 'D':
-        new_pos = start_pos - 1;
-        break;
+      new_pos = handle_move_direction(seq[1], start_pos, x);
+
+      if (area[new_pos] == WALL) {
+        return;
       }
 
-      if (!is_inside(new_pos, len, x, y)) {
-        return;
+      if (area[new_pos] == BOX) {
+        int new_box_pos = handle_move_direction(seq[1], new_pos, x);
+
+        if (area[new_box_pos] == WALL) {
+          return;
+        }
+
+        area[new_box_pos] = BOX;
       }
 
       area[start_pos] = SPACE;

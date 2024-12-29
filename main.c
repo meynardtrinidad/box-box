@@ -31,6 +31,13 @@ int main() {
     start_pos = generate_random_number(MIN, len);
   }
   area[start_pos] = PLAYER;
+
+  int random_pos = generate_random_number(MIN, len);
+  while (is_inside(random_pos, len, x, y) == 0 && random_pos != start_pos) {
+    random_pos = generate_random_number(MIN, len);
+  }
+  area[random_pos] = BOX;
+
   display_area(area, len, x, y);
 
   enable_raw_mode(&termios_t);
@@ -40,7 +47,7 @@ int main() {
     if (c == 'q') // Exit on 'q' press
       break;
 
-    handle_move(c, &start_pos, area, len, x, y);
+    handle_move_player(c, &start_pos, area, len, x, y);
     display_area(area, len, x, y);
   }
 
